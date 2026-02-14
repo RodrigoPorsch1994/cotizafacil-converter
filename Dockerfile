@@ -1,20 +1,19 @@
-FROM node:20-slim
+FROM node:20-bullseye
 
-RUN apt-get update && apt-get install -y \
-  libreoffice \
-  fonts-dejavu \
-  fonts-liberation \
-  fontconfig \
-  && rm -rf /var/lib/apt/lists/*
+# Install LibreOffice for conversions
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libreoffice && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
+COPY package*.json ./
 RUN npm install --omit=dev
 
 COPY . .
 
-ENV PORT=8080
-EXPOSE 8080
+ENV NODE_ENV=production
+ENV PORT=3000
 
-CMD ["node", "server.js"]
+EXPOSE 3000
+CMD ["npm", "start"]
